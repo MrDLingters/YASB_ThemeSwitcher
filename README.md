@@ -44,3 +44,29 @@ If you want to switch themes only for YASB:
 4. Copy [script for Zen](https://github.com/MrDLingters/YASB_ThemeSwitcher/tree/main/Script%20for%20Zen%20browser) to your C:\Users\<YourUser>\AppData\Roaming\zen\Profiles\<profile>\chrome\JS\
 5. Clear Zen's startup cache. Go to `about:support` and click "Clear Startup Cache".
 6. After changing theme in YASB script will change Zen browser background color.
+
+
+### Adding themes
+#### 1. Open C:\Users\USERNAME\.config\yasb\styles.css and add your color scheme to "colors" section following for template:
+```
+    /* Catppuccin Latte */
+    /* --background: #eff1f5; - main background
+    --background2: #ccd0da; - secondary background 
+    --accent: #7c7f93; - accent color
+    --text: #4c4f69; - main text color
+    --accentText: #eff1f5; - text on colored objects
+    --hover: #bcc0cc; - hover color
+    --mutedBG: #e6e9ef; - muted background
+    --border: #ccd0da; - border color
+    --redFlash: #d20f39; - color for "close" button in taskbar, flashing apps and secondary hover for activated buttons
+    --subtext: #6c6f85; */ - muted text
+```
+Name of a color scheme always should stay commented. Make sure, you have only one uncommented color scheme.
+
+#### 2. Open C:\Users\USERNAME\.config\yasb\config.yaml and add your theme for "Home" widget to "menu_list" section following for template:
+```
+- title: "🎨 THEME_NAME"
+        command: "cmd.exe"
+        args: ["/c", "pwsh", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "%USERPROFILE%/.config/yasb/theme_switcher.ps1", "set", "THEME_NAME"]
+```
+#### 3. If you have color scheme for terminal with your theme, add it to your settings.json in `"schemes"` section and set same name as for YASB in styles.css.
