@@ -6,8 +6,8 @@
     const PREF_NAME     = "mod.sameerasw.zen_transparency_color";
     const CSS_VAR_NAME  = "--mod-sameerasw-zen_transparency_color";
 
-    // Собираем путь к файлу-мосту из домашней директории пользователя.
-    // Это избавляет от хардкода конкретного имени профиля.
+    // Build the bridge file path from the user's home directory.
+    // This avoids hardcoding a specific profile name.
     const HOME_DIR = Services.dirsvc.get("Home", Ci.nsIFile).path;
     const WATCH_FILE = PathUtils.join(HOME_DIR, ".config", "yasb", "zen_bg.txt");
 
@@ -63,6 +63,6 @@
     applyColor();
     setInterval(applyColor, 1000);
 
-    // Повторное применение после инициализации окна Zen
+    // Re-apply after Zen finishes initializing the window
     setTimeout(() => { lastColor = null; applyColor(); }, 3000);
 })();
