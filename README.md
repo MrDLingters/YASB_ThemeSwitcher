@@ -16,5 +16,6 @@ Script for switching color schemes in YASB.
 If you want to switch themes only for YASB:
 1. Download Theme switcher version of supported YASB theme and put files in C:\Users\USERNAME\.config\yasb
 <img width="944" height="438" alt="image" src="https://github.com/user-attachments/assets/d3eddb49-0875-482b-bd89-d217e6a0e61a" />
-2. Download [script for YASB](https://github.com/MrDLingters/YASB_ThemeSwitcher/tree/main/Script%20for%20YASB) and put it in the same folder with YASB config (C:\Users\USERNAME\.config\yasb)
+
+2. Download [script for YASB](https://github.com/MrDLingters/YASB_ThemeSwitcher/tree/main/Script%20for%20YASB) and put it in the same folder with YASB config: C:\Users\USERNAME\.config\yasb
 3. Reload YASB
