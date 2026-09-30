@@ -1,2 +1,2 @@
-# YASB_ThemeSwitcher
+# YASB theme switcher
 Script for switching color schemes in YASB.
