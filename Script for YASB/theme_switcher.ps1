@@ -1,15 +1,15 @@
-# theme_switcher.ps1 — Требуется PowerShell 7+ (pwsh).
+# theme_switcher.ps1 — Requires PowerShell 7+ (pwsh).
 $StylesPath      = Join-Path $env:USERPROFILE ".config\yasb\styles.css"
 $YasbColorsPath  = Join-Path $env:USERPROFILE ".config\yasb\yasb_colors.css"
 $TackyConfigPath = Join-Path $env:USERPROFILE ".config\tacky-borders\config.yaml"
 
-# Файл-мост для Zen: userChrome.js читает его и применяет pref без перезапуска
+# Bridge file for Zen: userChrome.js reads it and applies the pref without a restart
 $ZenBridgeFile   = Join-Path $env:USERPROFILE ".config\yasb\zen_bg.txt"
 
-# State-файл: хранит SHA256 от yasb_colors.css, чтобы замечать изменения акцента Windows
+# State file: stores the SHA256 of yasb_colors.css to detect Windows accent changes
 $AccentStateFile = Join-Path $env:USERPROFILE ".config\yasb\.accent_state"
 
-# Автоматически находим settings.json Windows Terminal.
+# Automatically locate Windows Terminal's settings.json.
 function Get-WtSettingsPath {
     $candidates = @(
         (Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json")
@@ -154,22 +154,22 @@ function Get-BlockVars {
     return $vars
 }
 
-# Читает yasb_colors.css целиком, убирает комментарии и собирает ВСЕ
-# определения вида --имя: значение; вне зависимости от того, обёрнуты ли
-# они в :root или нет.
+# Reads yasb_colors.css in full, strips comments, and collects ALL
+# `--name: value;` definitions regardless of whether they are wrapped
+# in :root or not.
 function Get-ImportedColors {
     if (-not (Test-Path $YasbColorsPath)) { return @{} }
 
     $raw = Get-Content -LiteralPath $YasbColorsPath -Raw -Encoding utf8
 
-    # Убираем блочные /* ... */ комментарии (включая многострочные)
+    # Strip block comments /* ... */ (including multiline)
     $clean = [regex]::Replace(
         $raw,
         '/\*.*?\*/',
         '',
         [System.Text.RegularExpressions.RegexOptions]::Singleline
     )
-    # Убираем строчные // комментарии
+    # Strip line comments //
     $clean = [regex]::Replace($clean, '//[^\r\n]*', '')
 
     $vars = @{}
@@ -181,9 +181,9 @@ function Get-ImportedColors {
     return $vars
 }
 
-# Разворачивает var(--xxx) в конкретное значение, ища xxx в локальных
-# переменных темы и в переменных из yasb_colors.css.
-# Рекурсивно (до 5 уровней) — на случай, если переменная ссылается на другую.
+# Expands var(--xxx) into a concrete value by looking up xxx in the theme's
+# local variables and in yasb_colors.css.
+# Recurses (up to 5 levels) in case a variable references another one.
 function Resolve-Var {
     param($Value, $LocalVars, $ImportedVars, [int]$Depth = 0)
     if (-not $Value) { return $null }
@@ -196,7 +196,7 @@ function Resolve-Var {
     if ($LocalVars.ContainsKey($varName))        { $resolved = $LocalVars[$varName] }
     elseif ($ImportedVars.ContainsKey($varName)) { $resolved = $ImportedVars[$varName] }
     else { return $Value }
-    if ($resolved -eq $Value) { return $Value }  # защита от self-reference
+    if ($resolved -eq $Value) { return $Value }  # guard against self-reference
     return Resolve-Var -Value $resolved -LocalVars $LocalVars -ImportedVars $ImportedVars -Depth ($Depth + 1)
 }
 
@@ -244,7 +244,7 @@ function Test-AccentChanged {
 function Update-TerminalScheme {
     param([string]$Target)
     if (-not $WtSettingsPath) {
-        Write-Warning "[WT] settings.json не найден ни в одном из известных расположений"
+        Write-Warning "[WT] settings.json not found in any of the known locations"
         return
     }
     if (-not (Test-Path -LiteralPath $WtSettingsPath)) { return }
@@ -289,7 +289,7 @@ function Update-TackyBorders {
 }
 
 
-# ========== Zen Browser (live через файл-мост) ==========
+# ========== Zen Browser (live via bridge file) ==========
 
 function Update-ZenBridge {
     param([string]$BackgroundColor)
@@ -303,12 +303,12 @@ function Update-ZenBridge {
     try {
         Set-Content -LiteralPath $ZenBridgeFile -Value $BackgroundColor -Encoding utf8 -NoNewline -ErrorAction Stop
     } catch {
-        Write-Warning "[Zen] Не удалось записать в файл-мост $ZenBridgeFile : $_"
+        Write-Warning "[Zen] Failed to write to bridge file $ZenBridgeFile : $_"
     }
 }
 
 
-# ========== Применение артефактов темы (Tacky + Zen) ==========
+# ========== Applying theme artifacts (Tacky + Zen) ==========
 
 function Update-CurrentThemeArtifacts {
     param($Lines, $Themes, [string]$ThemeName)
@@ -326,12 +326,12 @@ function Update-CurrentThemeArtifacts {
     $borderHex     = ConvertTo-Hex -Value $borderRaw
     $backgroundHex = ConvertTo-Hex -Value $backgroundRaw
 
-    # Проверяем, что Resolve-Var действительно всё развернул
+    # Make sure Resolve-Var actually resolved everything
     if ($accentHex -and $borderHex -and
         -not $accentHex.StartsWith('var(') -and -not $borderHex.StartsWith('var(')) {
         Update-TackyBorders -ActiveColor $accentHex -InactiveColor $borderHex
     } else {
-        Write-Warning "[Tacky] Не удалось развернуть цвета темы '$ThemeName' (accent=$accentRaw, border=$borderRaw)"
+        Write-Warning "[Tacky] Failed to resolve colors for theme '$ThemeName' (accent=$accentRaw, border=$borderRaw)"
     }
 
     if ($backgroundHex -and -not $backgroundHex.StartsWith('var(')) {
@@ -347,7 +347,7 @@ if ($Action -eq 'debug-wt-path') {
     return
 }
 
-# Диагностика: показывает, как разворачиваются переменные активной темы
+# Diagnostics: shows how the active theme's variables resolve
 if ($Action -eq 'debug-vars') {
     $linesD  = @(Get-Content -LiteralPath $StylesPath -Encoding utf8)
     $themesD = Get-Themes -Lines $linesD
@@ -358,10 +358,10 @@ if ($Action -eq 'debug-vars') {
         $localVars = Get-BlockVars -Lines $linesD -First $entry.Start -Last $entry.End
         $imported  = Get-ImportedColors
         Write-Output ""
-        Write-Output "Local vars в теме:"
+        Write-Output "Local vars in theme:"
         foreach ($k in $localVars.Keys) { Write-Output ("  --{0} = {1}" -f $k, $localVars[$k]) }
         Write-Output ""
-        Write-Output "Импортированные из yasb_colors.css:"
+        Write-Output "Imported from yasb_colors.css:"
         foreach ($k in $imported.Keys) { Write-Output ("  --{0} = {1}" -f $k, $imported[$k]) }
         Write-Output ""
         Write-Output ("accent resolved = {0}" -f (Resolve-Var -Value $localVars['accent'] -LocalVars $localVars -ImportedVars $imported))
@@ -394,7 +394,7 @@ if ($Action -eq 'reapply-accent') {
     return
 }
 
-# Синтаксис: watch-accent [timeout_seconds]
+# Usage: watch-accent [timeout_seconds]
 if ($Action -eq 'watch-accent') {
     if ($active) { Write-Output $active } else { Write-Output "Unknown" }
 
@@ -484,7 +484,7 @@ Update-TerminalScheme -Target $targetTheme
 # 3) Tacky Borders + Zen
 Update-CurrentThemeArtifacts -Lines $lines -Themes $themes -ThemeName $targetTheme
 
-# 4) Обновляем state-файл
+# 4) Update state file
 if (Test-Path -LiteralPath $YasbColorsPath) {
     (Get-FileHash -LiteralPath $YasbColorsPath -Algorithm SHA256).Hash |
         Set-Content -LiteralPath $AccentStateFile -Encoding utf8 -NoNewline
