@@ -10,6 +10,11 @@ Script for switching color schemes in YASB.
 - [Shibumi](https://github.com/MrDLingters/Shibumi_YASB/tree/main) - Hyprland inspired minimalistic bar with several color schemes available in one CSS.
 - [Okinami](https://github.com/MrDLingters/Okinami_YASB)           - Minimalistic bar with waves design and several color schemes available in one CSS.
 
+#### Supported integrations:
+- Windows Termimal - color schemes
+- Tacky borders - active and inactive colors
+- Zen Browser - background color for Zen Transparent mod
+
 ### Installation
 
 #### 1. Theme switcher for YASB
@@ -19,3 +24,15 @@ If you want to switch themes only for YASB:
 
 2. Download [script for YASB](https://github.com/MrDLingters/YASB_ThemeSwitcher/tree/main/Script%20for%20YASB) and put it in the same folder with YASB config: C:\Users\USERNAME\.config\yasb
 3. Reload YASB
+
+#### 2. Tacky borders
+1. Set your `"active_color` and `inactive_color` in C:\Users\USERNAME\.config\tacky-borders\config.yaml to HEX values: 
+<img width="440" height="100" alt="image" src="https://github.com/user-attachments/assets/78e4fd91-2eb4-4d6e-b966-6dc46c2a6537" />
+
+2. After changing theme in YASB script will change your border's colors.
+
+#### 3. Windows Terminal
+1. Add [color schemes](https://github.com/MrDLingters/YASB_ThemeSwitcher/tree/main/Terminal%20color%20schemes) from this repo to your "settings.json" in `"schemes"` section. It can be open from Terminal settings:
+<img width="986" height="749" alt="image" src="https://github.com/user-attachments/assets/71217307-1ec6-4266-a265-17b0120b89a9" />
+
+2. After changing theme in YASB script will change your terminal's color scheme.
