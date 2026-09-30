@@ -11,7 +11,7 @@ Script for switching color schemes in YASB.
 - [Okinami](https://github.com/MrDLingters/Okinami_YASB)           - Minimalistic bar with waves design and several color schemes available in one CSS.
 
 #### Supported integrations:
-- Windows Termimal - color schemes
+- Windows Terminal - color schemes
 - Tacky borders - active and inactive colors
 - Zen Browser - background color for Zen Transparent mod
 
