@@ -36,3 +36,11 @@ If you want to switch themes only for YASB:
 <img width="986" height="749" alt="image" src="https://github.com/user-attachments/assets/71217307-1ec6-4266-a265-17b0120b89a9" />
 
 2. After changing theme in YASB script will change your terminal's color scheme.
+
+#### 4. Zen Browser
+1. Install and setup Zen transparent mod/ I have a [guide](https://youtu.be/38YHr2Xrk4k?si=kdv5NwFT5uhAKW5G) for it.
+2. Download and install [fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig).
+3. Enable the required preference in `about:config`: `toolkit.legacyUserProfileCustomizations.stylesheets`, `userChromeJS.enabled` and `devtools.chrome.enabled`.
+4. Copy [script for Zen](https://github.com/MrDLingters/YASB_ThemeSwitcher/tree/main/Script%20for%20Zen%20browser) to your C:\Users\<YourUser>\AppData\Roaming\zen\Profiles\<profile>\chrome\JS\
+5. Clear Zen's startup cache. Go to `about:support` and click "Clear Startup Cache".
+6. After changing theme in YASB script will change Zen browser background color.
