@@ -5,11 +5,15 @@
 (function() {
     const PREF_NAME     = "mod.sameerasw.zen_transparency_color";
     const CSS_VAR_NAME  = "--mod-sameerasw-zen_transparency_color";
-    const WATCH_FILE    = "C:\\Users\\MrDLi\\.config\\yasb\\zen_bg.txt";
+
+    // Собираем путь к файлу-мосту из домашней директории пользователя.
+    // Это избавляет от хардкода конкретного имени профиля.
+    const HOME_DIR = Services.dirsvc.get("Home", Ci.nsIFile).path;
+    const WATCH_FILE = PathUtils.join(HOME_DIR, ".config", "yasb", "zen_bg.txt");
 
     let lastColor = null;
 
-    console.log("[ZenThemeLive] Скрипт запущен. Pref:", PREF_NAME, "CSS var:", CSS_VAR_NAME);
+    console.log("[ZenThemeLive] Script started. Watching:", WATCH_FILE);
 
     async function readColorFromFile() {
         try {
@@ -18,7 +22,7 @@
             const data = await IOUtils.readUTF8(WATCH_FILE);
             return data.trim();
         } catch (e) {
-            console.error("[ZenThemeLive] Ошибка чтения файла:", e);
+            console.error("[ZenThemeLive] File read error:", e);
             return null;
         }
     }
@@ -32,7 +36,7 @@
                     count++;
                 }
             } catch (e) {
-                console.error("[ZenThemeLive] Ошибка установки CSS var в окне:", e);
+                console.error("[ZenThemeLive] Failed to set CSS var:", e);
             }
         }
         return count;
@@ -44,30 +48,21 @@
         if (color === lastColor) return;
 
         try {
-            // 1. Обновляем pref — чтобы значение сохранилось в prefs.js
-            //    и переживало перезапуск браузера.
             Services.prefs.setStringPref(PREF_NAME, color);
             Services.prefs.savePrefFile(null);
 
-            // 2. Обновляем CSS-переменную во всех открытых окнах.
-            //    Это и даёт визуальное изменение «на лету».
             const n = applyCssVarToAllWindows(color);
 
             lastColor = color;
-            console.log(`[ZenThemeLive] Цвет применён: ${color} (окон: ${n})`);
+            console.log(`[ZenThemeLive] Color applied: ${color} (windows: ${n})`);
         } catch (e) {
-            console.error("[ZenThemeLive] Ошибка применения:", e);
+            console.error("[ZenThemeLive] Apply error:", e);
         }
     }
 
-    // Применяем сразу при запуске (на случай, если pref уже сохранён,
-    // но Zen не успел его показать)
     applyColor();
-
-    // И далее — раз в секунду
     setInterval(applyColor, 1000);
 
-    // Небольшой хак: иногда после запуска Zen перезаписывает переменную
-    // при инициализации окна. Через 3 секунды принудительно повторяем.
+    // Повторное применение после инициализации окна Zen
     setTimeout(() => { lastColor = null; applyColor(); }, 3000);
 })();
